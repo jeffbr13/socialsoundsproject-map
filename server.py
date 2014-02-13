@@ -36,7 +36,7 @@ def index():
     """
     Serve the index page.
     """
-    return app.send_static_file('index.html')
+    return render_template('index.html')
 
 
 @app.route('/soundcloud/setup')
