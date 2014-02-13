@@ -3,12 +3,12 @@
 """Back-end server for socialsoundsproject.com"""
 import os
 
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 from werkzeug.utils import secure_filename
 from wtforms import Form, DecimalField, StringField, FileField, validators
 import soundcloud
 
-from data import connection
+from data import sound_db
 
 
 SERVER_URL = 'http://socialsoundsproject.herokuapp.com'
@@ -82,12 +82,13 @@ def upload_sound():
     return render_template('upload-sound.html', form=form)
 
 
-@app.route('/sounds')
+@app.route('/sounds.json')
 def all_sounds():
     """
     Return JSON for all sounds.
     """
-    pass
+    sounds = [sound for sound in sound_db.sounds.find()]
+    return jsonify(sounds=sounds)
 
 
 if __name__ == '__main__':
