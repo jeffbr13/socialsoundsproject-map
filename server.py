@@ -5,7 +5,7 @@ import os
 
 from flask import Flask, render_template, request
 from werkzeug.utils import secure_filename
-from wtforms import Form, DecimalField, StringField, FileField
+from wtforms import Form, DecimalField, StringField, FileField, validators
 import soundcloud
 
 from data import connection
@@ -26,9 +26,9 @@ class UploadSoundForm(Form):
     """
     latitude = DecimalField(u'Latitude')
     longitude = DecimalField(u'Longitude')
-    human_readable_location = StringField(u'Human-readable Location', maxlength=140)
-    description = StringField(u'Description', maxlength=140)
-    sound = FileField(u'Sound File')
+    human_readable_location = StringField(u'Location (human-readable)', validators=[validators.Length(max=140)])
+    description = StringField(u'Description', validators=[validators.Length(max=140)])
+    sound = FileField(u'Sound')
 
 
 @app.route('/')
