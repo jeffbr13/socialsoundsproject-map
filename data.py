@@ -44,7 +44,7 @@ from mongokit import Document, Connection
 
 
 
-connection = Connection(host=environ.get('MONGODB_HOST'), port=environ.get('MONGODB_PORT'))
+connection = Connection(host=environ.get('MONGODB_HOST'), port=int(environ.get('MONGODB_PORT')))
 
 
 def max_length(length):
