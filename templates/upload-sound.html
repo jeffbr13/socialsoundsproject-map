@@ -3,6 +3,8 @@
 {% block title %}Upload sound - Social Sounds Project{% endblock %}
 
 {% block content %}
+<div class="upload-map"></div>
+
 {% from "_formhelpers.html" import render_field %}
 <form class="form-horizontal" role="form" method="POST" action="/register">
     {{ render_field(form.sound) }}
