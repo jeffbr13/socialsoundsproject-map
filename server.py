@@ -88,7 +88,9 @@ def upload_sound():
             track = soundcloud_client.post('/tracks', track={
                 'title': form.human_readable_location,
                 'description': form.description,
-                'asset_data': form.sound.data
+                'asset_data': form.sound.data,
+                'tag_list': 'geo:lat={lat} geo:lon={lon}'.format(lat=form.latitude, lon=form.longitude),
+                'track_type': 'recording'
             })
             sound.soundcloud_id = track.id
             sound.validate()
@@ -106,6 +108,7 @@ def all_sounds():
     """
     Return JSON for all sounds.
     """
+    # TODO: retrieve data from SoundCloud pages
     sounds = [sound for sound in db.sounds.find()]
     return jsonify(sounds=sounds)
 
