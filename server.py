@@ -63,6 +63,7 @@ def soundcloud_callback():
     """
     Extract SoundCloud authorisation code.
     """
+    #TODO: use Redis to stare these values
     db.session.drop()
     code = request.args.get('code')
     access_token, expires, scope, refresh_token = soundcloud_client.exchange_token(code=request.args.get('code'))
@@ -112,15 +113,16 @@ def all_sounds():
     """
     Return JSON for all sounds.
     """
-    # TODO: retrieve data from SoundCloud sounds instead of storing separately (upload_sound() shows fields used).
+    #TODO: retrieve data from SoundCloud sounds instead of storing separately (upload_sound() shows fields used).
     sounds = [sound for sound in db.sounds.find()]
     return jsonify(sounds=sounds)
 
 
 if __name__ == '__main__':
-    # Bind to PORT if defined, otherwise default to 5000.
+    #TODO: check for SoundCloud session in Redis at startup
     db = init_storage(environ.get('MONGOSOUP_URL'))
     soundcloud_client = init_soundcloud()
+    # Bind to PORT if defined, otherwise default to 5000.
     port = int(environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port, debug=True)
 
