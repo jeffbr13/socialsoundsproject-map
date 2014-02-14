@@ -46,10 +46,10 @@ class Sound(Document):
 
 class SoundCloudSession(Document):
     structure = {
-        'access_token': basestring,
+        'access_token': unicode,
         'expires': None,
-        'scope': None,
-        'refresh_token': basestring
+        'scope': unicode,
+        'refresh_token': unicode
     }
 
     use_dot_notation = True

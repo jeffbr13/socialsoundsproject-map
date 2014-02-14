@@ -66,7 +66,7 @@ def soundcloud_callback():
     #TODO: use Redis to stare these values
     db.session.drop()
     code = request.args.get('code')
-    access_token = soundcloud_client.exchange_token(code=request.args.get('code'))
+    access_token = soundcloud_client.exchange_token(code=request.args.get('code')).access_token
     session = db.sessions.SoundCloudSession()
     session['access_token'] = access_token
     session.validate()
