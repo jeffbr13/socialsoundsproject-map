@@ -45,6 +45,7 @@ def init_soundcloud():
                                  client_secret=environ.get('SOUNDCLOUD_CLIENT_SECRET'),
                                  redirect_uri=(SERVER_URL + SOUNDCLOUD_CALLBACK_PATH))
 
+
 @app.route('/')
 def index():
     """
@@ -55,7 +56,7 @@ def index():
 
 @app.route('/soundcloud/authenticate')
 def soundcloud_authenticate():
-    db.session.drop()
+    db.sessions.drop()
     soundcloud_client = init_soundcloud()
     return redirect(soundcloud_client.authorize_url())
 
@@ -65,8 +66,8 @@ def soundcloud_callback():
     """
     Extract SoundCloud authorisation code.
     """
-    #TODO: use Redis to stare these values
-    db.session.drop()
+    #TODO: use Redis to store these values, MongoDB is overcomplex for this
+    db.sessions.drop()
     code = request.args.get('code')
     access_token = soundcloud_client.exchange_token(code=request.args.get('code'))
     session = db.sessions.SoundCloudSession()
