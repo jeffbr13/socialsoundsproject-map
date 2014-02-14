@@ -55,6 +55,8 @@ def index():
 
 @app.route('/soundcloud/authenticate')
 def soundcloud_authenticate():
+    db.session.drop()
+    soundcloud_client = init_soundcloud()
     return redirect(soundcloud_client.authorize_url())
 
 
@@ -65,7 +67,6 @@ def soundcloud_callback():
     """
     #TODO: use Redis to stare these values
     db.session.drop()
-    soundcloud_client = init_soundcloud()
     code = request.args.get('code')
     access_token = soundcloud_client.exchange_token(code=request.args.get('code'))
     session = db.sessions.SoundCloudSession()
