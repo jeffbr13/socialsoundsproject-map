@@ -66,12 +66,12 @@ def soundcloud_callback():
     #TODO: use Redis to stare these values
     db.session.drop()
     code = request.args.get('code')
-    access_token, expires, scope, refresh_token = soundcloud_client.exchange_token(code=request.args.get('code'))
+    access_token = soundcloud_client.exchange_token(code=request.args.get('code'))
     session = db.sessions.SoundCloudSession()
     session['access_token'] = access_token
-    session['expires'] = expires
-    session['scope'] = scope
-    session['refresh_token'] = refresh_token
+    session['expires'] = soundcloud_client.expires
+    session['scope'] = soundcloud_client.scope
+    session['refresh_token'] = soundcloud_client.refresh_token
     session.validate()
     session.save()
     return render_template('soundcloud-callback.html', user=soundcloud_client.get('/me'))
