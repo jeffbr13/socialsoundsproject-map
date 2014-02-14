@@ -1,11 +1,12 @@
 {% extends "base.html" %}
 
 
-{% block title %}Upload sound - Social Sounds Project{% endblock %}
+{% block title %}Upload - Social Sounds Project{% endblock %}
 
 
 {% block content %}
-<div class="upload-map"></div>
+<div id="map">
+</div>
 
 {% from "_formhelpers.html" import render_field %}
 <form class="form-horizontal" role="form" method="POST" action="/register">
@@ -24,7 +25,6 @@
 {% block js %}
 <!-- Mapbox/Leaflet JS -->
 <script src="https://api.tiles.mapbox.com/mapbox.js/v1.6.1/mapbox.js"></script>
-
 <!-- Social Sounds Project map JS -->
-<script src="/static/js/map.js"></script>
+<script src="/static/js/upload.js"></script>
 {% endblock %}
