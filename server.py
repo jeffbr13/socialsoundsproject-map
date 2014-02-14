@@ -15,8 +15,8 @@ SERVER_URL = 'http://socialsoundsproject.herokuapp.com'
 SOUNDCLOUD_CALLBACK_PATH = '/soundcloud/callback'
 
 app = Flask(__name__)
-soundcloud_client = None
 db = None
+soundcloud_client = None
 
 
 class UploadSoundForm(Form):
@@ -35,11 +35,15 @@ def init_soundcloud():
     Returns SoundCloud client to use.
     """
     access_token = db.sessions.find_one()
-    return soundcloud.Client(client_id=environ.get('SOUNDCLOUD_CLIENT_ID'),
-                             client_secret=environ.get('SOUNDCLOUD_CLIENT_SECRET'),
-                             redirect_uri=(SERVER_URL + SOUNDCLOUD_CALLBACK_PATH),
-                             access_token=access_token)
-
+    if access_token:
+        return soundcloud.Client(client_id=environ.get('SOUNDCLOUD_CLIENT_ID'),
+                                 client_secret=environ.get('SOUNDCLOUD_CLIENT_SECRET'),
+                                 redirect_uri=(SERVER_URL + SOUNDCLOUD_CALLBACK_PATH),
+                                 access_token=access_token)
+    else:
+        return soundcloud.Client(client_id=environ.get('SOUNDCLOUD_CLIENT_ID'),
+                                 client_secret=environ.get('SOUNDCLOUD_CLIENT_SECRET'),
+                                 redirect_uri=(SERVER_URL + SOUNDCLOUD_CALLBACK_PATH))
 
 @app.route('/')
 def index():
@@ -69,7 +73,7 @@ def soundcloud_callback():
     session['refresh_token'] = refresh_token
     session.validate()
     session.save()
-    return app.send_static_file('soundcloud-callback.html', user=soundcloud_client.get('/me'))
+    return render_template('soundcloud-callback.html', user=soundcloud_client.get('/me'))
 
 
 @app.route('/upload', methods=['GET', 'POST'])
@@ -108,7 +112,7 @@ def all_sounds():
     """
     Return JSON for all sounds.
     """
-    # TODO: retrieve data from SoundCloud pages
+    # TODO: retrieve data from SoundCloud sounds instead of storing separately (upload_sound() shows fields used).
     sounds = [sound for sound in db.sounds.find()]
     return jsonify(sounds=sounds)
 
