@@ -53,3 +53,4 @@ class SoundCloudSession(Document):
     }
 
     use_dot_notation = True
+    required = ['access_token']
