@@ -1,6 +1,7 @@
 #!python
 # -*- coding: utf-8 -*-
 """Back-end server for socialsoundsproject.com"""
+from datetime import datetime
 from os import environ
 
 from flask import Flask, render_template, request, jsonify, redirect
@@ -92,7 +93,8 @@ def upload_sound():
             sound.human_readable_location = form.human_readable_location
             sound.description = form.description
             track = soundcloud_client.post('/tracks', track={
-                'title': form.human_readable_location,
+                'title': '{location}, {upload_time:%b %d %Y, %H:%M}'.format(location=form.human_readable_location,
+                                                                            upload_time=datetime.now()),
                 'description': form.description,
                 'asset_data': form.sound.data,
                 'tag_list': 'geo:lat={lat} geo:lon={lon}'.format(lat=form.latitude, lon=form.longitude),
