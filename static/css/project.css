@@ -1,18 +1,12 @@
-body { padding-top: 90px; }
+body { padding-top: 80px; }
 
 .navbar-brand {
+    color: #333 !important;
     font-size: 48px;
 }
 
 .navbar-btn {
     margin-top: 15px;
-}
-
-.page-header>h1>a {
-    color: inherit;
-}
-.page-header>h1>a:hover, .page-header>h1>a:active, .page-header>h1>a:focus {
-    text-decoration: none;
 }
 
 #map { height: 450px;}
