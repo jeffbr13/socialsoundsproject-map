@@ -63,7 +63,7 @@ def soundcloud_callback():
     """
     Extract SoundCloud authorisation code.
     """
-    session.drop()
+    db.session.drop()
     code = request.args.get('code')
     access_token, expires, scope, refresh_token = soundcloud_client.exchange_token(code=request.args.get('code'))
     session = db.sessions.SoundCloudSession()
