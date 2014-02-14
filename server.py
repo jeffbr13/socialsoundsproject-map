@@ -3,7 +3,7 @@
 """Back-end server for socialsoundsproject.com"""
 from os import environ
 
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, redirect
 from werkzeug.utils import secure_filename
 from wtforms import Form, DecimalField, StringField, FileField, validators
 import soundcloud
