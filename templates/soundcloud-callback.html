@@ -1,13 +1,9 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Soundcloud Authentication - Social Sounds Project</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-<h1>Soundcloud Authentication</h1>
+{% block title %}Soundcloud account authenticated - Social Sounds Project{% endblock %}
 
-<p>Welcome, {{user.full_name}}/<a href="{{user.uri}}">{{user.username}}</a>, you're signed in!</p>
+{% block content %}
+<h1>Soundcloud account authenticated successfully!</h1>
 
-</body>
-</html>
+<p>Welcome, {{user.full_name}} (<a href="{{user.uri}}">{{user.username}}</a>) <a href="/">Social Sounds Project</a> will now use your account to access and store sounds.</p>
+{% endblock %}
