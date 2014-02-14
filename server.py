@@ -16,7 +16,7 @@ SOUNDCLOUD_CALLBACK_PATH = '/soundcloud/callback'
 
 app = Flask(__name__)
 soundcloud_client = None
-sound_db = None
+db = None
 
 
 class UploadSoundForm(Form):
@@ -34,7 +34,7 @@ def init_soundcloud():
     """
     Returns SoundCloud client to use.
     """
-    access_token = sound_db.sessions.find_one()
+    access_token = db.sessions.find_one()
     return soundcloud.Client(client_id=environ.get('SOUNDCLOUD_CLIENT_ID'),
                              client_secret=environ.get('SOUNDCLOUD_CLIENT_SECRET'),
                              redirect_uri=(SERVER_URL + SOUNDCLOUD_CALLBACK_PATH),
@@ -62,7 +62,7 @@ def soundcloud_callback():
     session.drop()
     code = request.args.get('code')
     access_token, expires, scope, refresh_token = soundcloud_client.exchange_token(code=request.args.get('code'))
-    session = sound_db.sessions.SoundCloudSession()
+    session = db.sessions.SoundCloudSession()
     session['access_token'] = access_token
     session['expires'] = expires
     session['scope'] = scope
@@ -81,7 +81,7 @@ def upload_sound():
         form = UploadSoundForm(request.form)
 
         if form.sound.data:
-            sound = sound_db.sounds.Sound()
+            sound = db.sounds.Sound()
             sound.location = (form.latitude, form.longitude)
             sound.human_readable_location = form.human_readable_location
             sound.description = form.description
@@ -106,13 +106,13 @@ def all_sounds():
     """
     Return JSON for all sounds.
     """
-    sounds = [sound for sound in sound_db.sounds.find()]
+    sounds = [sound for sound in db.sounds.find()]
     return jsonify(sounds=sounds)
 
 
 if __name__ == '__main__':
     # Bind to PORT if defined, otherwise default to 5000.
-    sound_db = init_storage(environ.get('MONGOSOUP_URL'))
+    db = init_storage(environ.get('MONGOSOUP_URL'))
     soundcloud_client = init_soundcloud()
     port = int(environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port, debug=True)
