@@ -4,13 +4,13 @@ from mongokit import Document, Connection
 
 
 
-def init_storage(host, port):
+def init_storage(*args, **kwargs):
     """
     Returns MongoDB database to use.
     """
-    connection = Connection(host=host, port=port)
+    connection = Connection(*args, **kwargs)
     connection.register([Sound, SoundCloudSession])
-    return connection.sound_db
+    return connection.get_default_database()
 
 
 def max_length(length):

@@ -112,7 +112,7 @@ def all_sounds():
 
 if __name__ == '__main__':
     # Bind to PORT if defined, otherwise default to 5000.
-    sound_db = init_storage(host=environ.get('MONGODB_HOST'), port=int(environ.get('MONGODB_PORT')))
+    sound_db = init_storage(environ.get('MONGOSOUP_URL'))
     soundcloud_client = init_soundcloud()
     port = int(environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port, debug=True)
