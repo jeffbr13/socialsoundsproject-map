@@ -1,23 +1,22 @@
 #!python
 # -*- coding: utf-8 -*-
 """Back-end server for socialsoundsproject.com"""
-import os
+from os import environ
 
 from flask import Flask, render_template, request, jsonify
 from werkzeug.utils import secure_filename
 from wtforms import Form, DecimalField, StringField, FileField, validators
 import soundcloud
 
-from data import sound_db
+from data import init_storage
 
 
 SERVER_URL = 'http://socialsoundsproject.herokuapp.com'
 SOUNDCLOUD_CALLBACK_PATH = '/soundcloud/callback'
 
 app = Flask(__name__)
-soundcloud_client = soundcloud.Client(client_id=os.environ.get('SOUNDCLOUD_CLIENT_ID'),
-                                      client_secret=os.environ.get('SOUNDCLOUD_CLIENT_SECRET'),
-                                      redirect_uri=(SERVER_URL + SOUNDCLOUD_CALLBACK_PATH))
+soundcloud_client = None
+sound_db = None
 
 
 class UploadSoundForm(Form):
@@ -31,6 +30,17 @@ class UploadSoundForm(Form):
     sound = FileField(u'Sound')
 
 
+def init_soundcloud():
+    """
+    Returns SoundCloud client to use.
+    """
+    access_token = sound_db.sessions.find_one()
+    return soundcloud.Client(client_id=environ.get('SOUNDCLOUD_CLIENT_ID'),
+                             client_secret=environ.get('SOUNDCLOUD_CLIENT_SECRET'),
+                             redirect_uri=(SERVER_URL + SOUNDCLOUD_CALLBACK_PATH),
+                             access_token=access_token)
+
+
 @app.route('/')
 def index():
     """
@@ -39,8 +49,8 @@ def index():
     return render_template('index.html')
 
 
-@app.route('/soundcloud/setup')
-def setup():
+@app.route('/soundcloud/authenticate')
+def soundcloud_authenticate():
     return redirect(soundcloud_client.authorize_url())
 
 
@@ -49,9 +59,10 @@ def soundcloud_callback():
     """
     Extract SoundCloud authorisation code.
     """
+    session.drop()
     code = request.args.get('code')
     access_token, expires, scope, refresh_token = soundcloud_client.exchange_token(code=request.args.get('code'))
-    session = connection.SoundCloudSession()
+    session = sound_db.sessions.SoundCloudSession()
     session['access_token'] = access_token
     session['expires'] = expires
     session['scope'] = scope
@@ -68,12 +79,20 @@ def upload_sound():
     """
     if request.method == 'POST':
         form = UploadSoundForm(request.form)
+
         if form.sound.data:
+            sound = sound_db.sounds.Sound()
+            sound.location = (form.latitude, form.longitude)
+            sound.human_readable_location = form.human_readable_location
+            sound.description = form.description
             track = soundcloud_client.post('/tracks', track={
                 'title': form.human_readable_location,
                 'description': form.description,
                 'asset_data': form.sound.data
             })
+            sound.soundcloud_id = track.id
+            sound.validate()
+            sound.save()
             return redirect(track.permalink_url)
 
     else:
@@ -93,6 +112,8 @@ def all_sounds():
 
 if __name__ == '__main__':
     # Bind to PORT if defined, otherwise default to 5000.
-    port = int(os.environ.get('PORT', 5000))
+    sound_db = init_storage(host=environ.get('MONGODB_HOST'), port=int(environ.get('MONGODB_PORT')))
+    soundcloud_client = init_soundcloud()
+    port = int(environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port, debug=True)
 

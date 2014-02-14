@@ -1,11 +1,17 @@
 #!python
 # -*- coding: utf-8 -*-
-from os import environ
 from mongokit import Document, Connection
 
 
-connection = Connection(host=environ.get('MONGODB_HOST'), port=int(environ.get('MONGODB_PORT')))
-sound_db = connection.sound_db
+
+def init_storage(host, port):
+    """
+    Returns MongoDB database to use.
+    """
+    connection = Connection(host=host, port=port)
+    connection.register([Sound, SoundCloudSession])
+    return connection.sound_db
+
 
 def max_length(length):
     def validate(value):
@@ -15,7 +21,6 @@ def max_length(length):
     return validate
 
 
-@connection.register
 class Sound(Document):
     structure = {
         'soundcloud_id': int,
@@ -39,7 +44,6 @@ class Sound(Document):
                                                                     desc=self.description)
 
 
-@connection.register
 class SoundCloudSession(Document):
     structure = {
         'access_token': basestring,
