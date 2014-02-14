@@ -5,6 +5,7 @@
 {% block content %}
 <h1>Soundcloud account authenticated successfully!</h1>
 
-<p>Welcome, {{user.full_name}} (<a href="{{user.uri}}">{{user.username}}</a>).</p>
-<p><a href="/">Social Sounds Project</a> will now use your account to access and store sounds.</p>
+<p>Welcome, {{user.full_name}} (<a href="{{user.uri}}">{{user.username}}</a>)!</p>
+
+<p>The <a href="/">Social Sounds Project</a> will now use access and store sounds on your SoundCloud account.</p>
 {% endblock %}
