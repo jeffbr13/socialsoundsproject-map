@@ -3,39 +3,34 @@
 """Back-end server for socialsoundsproject.com"""
 from datetime import datetime
 from os import environ
+from urlparse import urlparse
 
 from flask import Flask, render_template, request, jsonify, redirect
-from werkzeug.utils import secure_filename
-from wtforms import Form, DecimalField, StringField, FileField, validators
+import redis
 import soundcloud
 
-from data import init_storage
+from models import UploadSoundForm
 
 
 SERVER_URL = 'http://socialsoundsproject.herokuapp.com'
 SOUNDCLOUD_CALLBACK_PATH = '/soundcloud/callback'
 
 app = Flask(__name__)
-db = None
+cache = None
 soundcloud_client = None
 
 
-class UploadSoundForm(Form):
-    """
-    Form to upload a Sound and associated information.
-    """
-    latitude = DecimalField(u'Latitude')
-    longitude = DecimalField(u'Longitude')
-    human_readable_location = StringField(u'Location (human-readable)', validators=[validators.Length(max=140)])
-    description = StringField(u'Description', validators=[validators.Length(max=140)])
-    sound = FileField(u'Sound')
+def init_cache(redis_url):
+    url = urlparse(redis_url)
+    return redis.Redis(host=url.hostname, port=url.port, password=url.password)
 
 
 def init_soundcloud():
     """
     Returns SoundCloud client to use.
     """
-    access_token = db.sessions.find_one()
+    #TODO: change to redis
+    access_token = cache.get('soundcloud:access_token')
     if access_token:
         return soundcloud.Client(client_id=environ.get('SOUNDCLOUD_CLIENT_ID'),
                                  client_secret=environ.get('SOUNDCLOUD_CLIENT_SECRET'),
@@ -57,7 +52,13 @@ def index():
 
 @app.route('/soundcloud/authenticate')
 def soundcloud_authenticate():
-    db.sessions.drop()
+    """
+    Authenticate as a SoundCloud user.
+
+    Accessing this URL drops any previous stored session information.
+    """
+    cache.delete('soundcloud:access_token')
+    cache.delete('soundcloud:scope')
     soundcloud_client = init_soundcloud()
     return redirect(soundcloud_client.authorize_url())
 
@@ -67,15 +68,10 @@ def soundcloud_callback():
     """
     Extract SoundCloud authorisation code.
     """
-    #TODO: use Redis to store these values, MongoDB is overcomplex for this
-    db.sessions.drop()
     code = request.args.get('code')
     access_token = soundcloud_client.exchange_token(code=request.args.get('code'))
-    session = db.sessions.SoundCloudSession()
-    session['access_token'] = access_token.access_token
-    session['scope'] = access_token.scope
-    session.validate()
-    session.save()
+    cache.set('soundcloud:access_token', access_token.access_token)
+    cache.set('soundcloud:scope', access_token.scope)
     return render_template('soundcloud-callback.html', user=soundcloud_client.get('/me'))
 
 
@@ -86,12 +82,7 @@ def upload_sound():
     """
     if request.method == 'POST':
         form = UploadSoundForm(request.form)
-
         if form.sound.data:
-            sound = db.sounds.Sound()
-            sound.location = (form.latitude, form.longitude)
-            sound.human_readable_location = form.human_readable_location
-            sound.description = form.description
             track = soundcloud_client.post('/tracks', track={
                 'title': '{location}, {upload_time:%b %d %Y, %H:%M}'.format(location=form.human_readable_location,
                                                                             upload_time=datetime.now()),
@@ -100,9 +91,6 @@ def upload_sound():
                 'tag_list': 'geo:lat={lat} geo:lon={lon}'.format(lat=form.latitude, lon=form.longitude),
                 'track_type': 'recording'
             })
-            sound.soundcloud_id = track.id
-            sound.validate()
-            sound.save()
             return redirect(track.permalink_url)
 
     else:
@@ -122,8 +110,7 @@ def all_sounds():
 
 
 if __name__ == '__main__':
-    #TODO: check for SoundCloud session in Redis at startup
-    db = init_storage(environ.get('MONGOSOUP_URL'))
+    cache = init_cache(environ.get('REDISCLOUD_URL'))
     soundcloud_client = init_soundcloud()
     # Bind to PORT if defined, otherwise default to 5000.
     port = int(environ.get('PORT', 5000))
