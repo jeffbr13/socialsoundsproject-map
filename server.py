@@ -84,6 +84,16 @@ def get_sounds(client):
     return sounds
 
 
+def check_sounds_refresh():
+    """
+    Gets sounds again, if the <sounds:refresh> key is set.
+    """
+    if REDIS_CACHE.get('sounds:refresh'):
+        logging.info('<sounds:refresh> key found, refreshing sounds...')
+        SOUNDCLOUD_SOUNDS = get_sounds(SOUNDCLOUD_CLIENT)
+        REDIS_CACHE.delete('soundcloud:new')
+        logging.debug('<sounds:refresh> key unset.')
+
 
 @app.route('/')
 def index():
@@ -121,7 +131,8 @@ def soundcloud_callback():
 @app.route('/upload', methods=['GET', 'POST'])
 def upload_sound():
     """
-    Serve or process the 'upload sound' form.
+    Serve the 'upload sound' form for GET requests,
+    and process the results of a POST request, uploading the sound to SoundCloud.
     """
     form = UploadSoundForm(request.form)
     if request.method == 'POST' and form.validate():
@@ -136,7 +147,8 @@ def upload_sound():
             'license': 'cc-by',
             'downloadable': 'true',
         })
-        logging.debug('Sound uploaded, redirecting user to homepage.')
+        logging.debug('Sound uploaded, setting <sounds:refresh> key and sending user home.')
+        REDIS_CACHE.set('sounds:refresh')
         return redirect('/')
 
     return render_template('upload-sound.html', form=form)
@@ -147,7 +159,17 @@ def all_sounds():
     """
     Return JSON for all sounds.
     """
+    check_sounds_refresh()
     return jsonify(sounds=SOUNDCLOUD_SOUNDS)
+
+
+@app.route('/refresh')
+def refresh_sounds():
+    """
+    Manually refresh sounds.
+    """
+    SOUNDCLOUD_SOUNDS = get_sounds(SOUNDCLOUD_CLIENT)
+    return redirect('/')
 
 
 if __name__ == '__main__':
