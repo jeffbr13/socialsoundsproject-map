@@ -20,4 +20,4 @@ class UploadSoundForm(Form):
     longitude = DecimalField(u'Longitude')
     human_readable_location = StringField(u'Location (human-readable)', validators=[validators.Length(max=140)])
     description = StringField(u'Description', validators=[validators.Length(max=140)])
-    sound = FileField(u'Sound')
+    sound = FileField(u'Sound File')
