@@ -11,8 +11,8 @@
 {% from "_formhelpers.html" import render_field %}
 <form class="form-horizontal" role="form" method="POST" action="/register">
     {{ render_field(form.sound) }}
-    {{ render_field(form.latitude, class="form-control") }}
-    {{ render_field(form.longitude, class="form-control") }}
+    {{ render_field(form.latitude, "hidden", class="form-control") }}
+    {{ render_field(form.longitude, "hidden", class="form-control") }}
     {{ render_field(form.human_readable_location, class="form-control") }}
     {{ render_field(form.description, class="form-control") }}
     <div class="col-sm-10 col-sm-offset-2">
