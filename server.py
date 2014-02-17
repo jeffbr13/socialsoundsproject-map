@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 """Back-end server for socialsoundsproject.com"""
 from datetime import datetime
+import logging
 from os import environ
 from urlparse import urlparse
 
@@ -9,28 +10,30 @@ from flask import Flask, render_template, request, jsonify, redirect
 import redis
 import soundcloud
 
-from models import UploadSoundForm
+from models import Sound, UploadSoundForm
 
 
 SERVER_URL = 'http://socialsoundsproject.herokuapp.com'
 SOUNDCLOUD_CALLBACK_PATH = '/soundcloud/callback'
 
+logging.basicConfig(level=logging.DEBUG)
 app = Flask(__name__)
 cache = None
 soundcloud_client = None
 
 
 def init_cache(redis_url):
+    logging.debug('Connecting to Redis cache...')
     url = urlparse(redis_url)
     return redis.Redis(host=url.hostname, port=url.port, password=url.password)
 
 
-def init_soundcloud():
+def init_soundcloud(token_cache):
     """
     Returns SoundCloud client to use.
     """
-    #TODO: change to redis
-    access_token = cache.get('soundcloud:access_token')
+    logging.debug('Initialising SoundCloud client...')
+    access_token = token_cache.get('soundcloud:access_token')
     if access_token:
         return soundcloud.Client(client_id=environ.get('SOUNDCLOUD_CLIENT_ID'),
                                  client_secret=environ.get('SOUNDCLOUD_CLIENT_SECRET'),
@@ -89,7 +92,9 @@ def upload_sound():
                 'description': form.description,
                 'asset_data': form.sound.data,
                 'tag_list': 'geo:lat={lat} geo:lon={lon}'.format(lat=form.latitude, lon=form.longitude),
-                'track_type': 'recording'
+                'track_type': 'recording',
+                'license': 'cc-by-sa',
+                'downloadable': True,
             })
             return redirect(track.permalink_url)
 
@@ -110,9 +115,11 @@ def all_sounds():
 
 
 if __name__ == '__main__':
+    logging.info('Starting server...')
     cache = init_cache(environ.get('REDISCLOUD_URL'))
-    soundcloud_client = init_soundcloud()
+    soundcloud_client = init_soundcloud(cache)
     # Bind to PORT if defined, otherwise default to 5000.
     port = int(environ.get('PORT', 5000))
+    logging.debug('Launching Flask app...')
     app.run(host='0.0.0.0', port=port, debug=True)
 
