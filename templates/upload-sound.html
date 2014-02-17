@@ -9,7 +9,7 @@
 </div>
 
 {% from "_formhelpers.html" import render_field %}
-<form class="form-horizontal" role="form" method="POST" action="/upload">
+<form class="form-horizontal" role="form" method="POST" action="" enctype="multipart/form-data">
     {{ render_field(form.sound) }}
     {{ render_field(form.latitude, "hidden", class="form-control") }}
     {{ render_field(form.longitude, "hidden", class="form-control") }}

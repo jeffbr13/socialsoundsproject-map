@@ -123,23 +123,21 @@ def upload_sound():
     """
     Serve or process the 'upload sound' form.
     """
-    if request.method == 'POST':
-        form = UploadSoundForm(request.form)
-        if form.sound.data:
-            track = SOUNDCLOUD_CLIENT.post('/tracks', track={
-                'title': '{location}, {upload_time:%b %d %Y, %H:%M}'.format(location=form.human_readable_location,
-                                                                            upload_time=datetime.now()),
-                'description': form.description,
-                'asset_data': form.sound.data,
-                'tag_list': 'geo:lat={lat} geo:lon={lon}'.format(lat=form.latitude, lon=form.longitude),
-                'track_type': 'recording',
-                'license': 'cc-by-sa',
-                'downloadable': True,
-            })
-            return redirect(track.permalink_url)
-
-    else:
-        form = UploadSoundForm()
+    form = UploadSoundForm(request.form)
+    if request.method == 'POST' and form.validate():
+        logging.info('Upload form validated, posting to SoundCloud...')
+        track = SOUNDCLOUD_CLIENT.post('/tracks', track={
+            'title': u'{location}, {upload_time:%b %d %Y, %H:%M}'.format(location=form.human_readable_location.data,
+                                                                         upload_time=datetime.now()),
+            'description': form.description.data,
+            'asset_data': request.files[form.sound.name],
+            'tag_list': 'socialsoundsproject geo:lat={lat} geo:lon={lon}'.format(lat=form.latitude.data, lon=form.longitude.data),
+            'track_type': 'recording',
+            'license': 'cc-by',
+            'downloadable': 'true',
+        })
+        logging.debug('Sound uploaded, redirecting user to homepage.')
+        return redirect('/')
 
     return render_template('upload-sound.html', form=form)
 
