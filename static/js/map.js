@@ -25,29 +25,41 @@ var soundIcon = L.icon({
     iconSize: [12,12]
 });
 
-
-var location1 = L.marker([55.946, -3.186], {icon: soundIcon}).addTo(map);
-location1.bindPopup('<b>Nicholson Street</b> Jan 27 2014,16:07 - <i>Traffic</i>')
-
-
-location1.on('click', function(event){
-    if (location1.sound) {
-        location1.sound.togglePause();
-    } else {
-        SC.stream("/tracks/131794424", function(sound){
-            location1.sound = sound;
-            loopSound(location1.sound);
-        })
-    }
+var pausedIcon = L.icon({
+    iconUrl: '/static/img/pause.png',
+    iconRetinaUrl: '/static/img/pause@2X.png',
+    iconSize: [12,12]
 });
 
-location1.on('mouseover', function(event){
-    // location1.togglePopup();
-    location1.openPopup();
+var playingIcon = L.icon({
+    iconUrl: '/static/img/play.png',
+    iconRetinaUrl: '/static/img/play@2X.png',
+    iconSize: [12,12]
 });
 
-location1.on('mouseout', function(event){
-    setTimeout(function(){
-        location1.closePopup();
-    }, 1000);
+
+$.getJSON('/sounds.json', function (json) {
+    $.each(json.sounds, function (index, sound) {
+        console.log(sound);
+        var sound_marker = L.marker([sound.latitude, sound.longitude], {icon: pausedIcon}).addTo(map);
+        console.log(sound_marker);
+
+        sound_marker.on('click', function (event) {
+            if (sound_marker.sound) {
+                sound_marker.sound.togglePause();
+
+                if (sound_marker.sound.paused) {
+                    sound_marker.setIcon(pausedIcon);
+                } else {
+                    sound_marker.setIcon(playingIcon);
+                }
+            } else {
+                SC.stream("/tracks/" + sound.soundcloud_id, function(sound){
+                    sound_marker.sound = sound;
+                    loopSound(sound_marker.sound);
+                    sound_marker.setIcon(playingIcon);
+                })
+            }
+        });
+    })
 });
