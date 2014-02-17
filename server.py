@@ -55,7 +55,10 @@ def get_sounds(client):
         'Fetching sound data from {user}\'s SoundCloud stream.'.format(user=client.get('/me').obj.get('username'))
         )
     sounds = []
-    tracks = client.get('/me/tracks')
+    try:
+        tracks = client.get('/me/tracks')
+    except Exception as e:
+        logging.error('Couldn\'t get SoundCloud sounds, try authenticating: {0}'.format(e))
 
     for track in tracks:
         try:
@@ -112,7 +115,7 @@ def soundcloud_authenticate():
     """
     REDIS_CACHE.delete('soundcloud:access_token')
     REDIS_CACHE.delete('soundcloud:scope')
-    SOUNDCLOUD_CLIENT = init_soundcloud()
+    SOUNDCLOUD_CLIENT = init_soundcloud(REDIS_CACHE)
     return redirect(SOUNDCLOUD_CLIENT.authorize_url())
 
 
