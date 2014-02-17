@@ -28,13 +28,13 @@ var soundIcon = L.icon({
 var playIcon = L.icon({
     iconUrl: '/static/img/play.png',
     iconRetinaUrl: '/static/img/play@2X.png',
-    iconSize: [12,12]
+    iconSize: [28,28]
 });
 
 var pauseIcon = L.icon({
     iconUrl: '/static/img/pause.png',
     iconRetinaUrl: '/static/img/pause@2X.png',
-    iconSize: [12,12]
+    iconSize: [28,28]
 });
 
 
@@ -48,13 +48,13 @@ $.getJSON('/sounds.json', function (json) {
                 if (sound_marker.sound.paused) {
                     sound_marker.setIcon(playIcon);
                 } else {
-                    sound_marker.setIcon(pausedIcon);
+                    sound_marker.setIcon(pauseIcon);
                 }
             } else {
                 SC.stream("/tracks/" + sound.soundcloud_id, function(sound){
                     sound_marker.sound = sound;
                     loopSound(sound_marker.sound);
-                    sound_marker.setIcon(pausedIcon);
+                    sound_marker.setIcon(pauseIcon);
                 })
             }
         });
