@@ -24,4 +24,10 @@ function onMapClick(e) {
     position_marker.setLatLng(e.latlng).addTo(map);
 }
 
+function onMarkerDrag (e) {
+    $('#latitude').val(e.target._latlng.lat);
+    $('#longitude').val(e.target._latlng.lng);
+}
+
 map.on('click', onMapClick);
+position_marker.on('drag', onMarkerDrag);
