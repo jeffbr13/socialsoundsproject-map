@@ -1,21 +1,15 @@
 #!python
 # -*- coding: utf-8 -*-
+from collections import namedtuple
 from wtforms import Form, DecimalField, StringField, FileField, validators
 
 
-class Sound():
-    # structure = {
-    #     'soundcloud_id': int,
-    #     'location': (float,float),
-    #     'human_readable_location': unicode,
-    #     'description': unicode
-    # }
-
-    def __repr__(self):
-        return u'<Sound: {lat}°N/{long}°E ({loc} - {desc})>'.format(lat=self.location[0],
-                                                                    loc=self.human_readable_location,
-                                                                    long=self.location[1],
-                                                                    desc=self.description)
+Sound = namedtuple('Sound', ['soundcloud_id',
+                             'latitude',
+                             'longitude',
+                             'human_readable_location',
+                             'description',
+                             'datetime'])
 
 
 class UploadSoundForm(Form):
