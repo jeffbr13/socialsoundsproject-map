@@ -151,7 +151,7 @@ def upload_sound():
             'downloadable': 'true',
         })
         logging.debug('Sound uploaded, setting <sounds:refresh> key and sending user home.')
-        REDIS_CACHE.set('sounds:refresh')
+        REDIS_CACHE.set('sounds:refresh', True)
         return redirect('/')
 
     return render_template('upload-sound.html', form=form)
