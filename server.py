@@ -52,7 +52,7 @@ def get_sounds(client):
     Get all geolocated Sounds in the authenticated user's stream.
     """
     logging.info(
-        'Fetching sound data from {user}\'s SoundCloud stream.'.format(client.get('/me').obj.get('username'))
+        'Fetching sound data from {user}\'s SoundCloud stream.'.format(user=client.get('/me').obj.get('username'))
         )
     sounds = []
     tracks = client.get('/me/tracks')
