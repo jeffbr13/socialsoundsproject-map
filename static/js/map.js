@@ -13,7 +13,7 @@ function loopSound(sound) {
 
 // Map creation + initialisation
 var map = L.map('map')
-    .setView([55.95, -3.2], 14)
+    .setView([55.947, -3.2], 14)
     .addLayer(L.mapbox.tileLayer('socialsoundsproject.h9hbe4l4', {
         detectRetina: true
     }));
@@ -25,39 +25,36 @@ var soundIcon = L.icon({
     iconSize: [12,12]
 });
 
-var pausedIcon = L.icon({
-    iconUrl: '/static/img/pause.png',
-    iconRetinaUrl: '/static/img/pause@2X.png',
+var playIcon = L.icon({
+    iconUrl: '/static/img/play.png',
+    iconRetinaUrl: '/static/img/play@2X.png',
     iconSize: [12,12]
 });
 
-var playingIcon = L.icon({
-    iconUrl: '/static/img/play.png',
-    iconRetinaUrl: '/static/img/play@2X.png',
+var pauseIcon = L.icon({
+    iconUrl: '/static/img/pause.png',
+    iconRetinaUrl: '/static/img/pause@2X.png',
     iconSize: [12,12]
 });
 
 
 $.getJSON('/sounds.json', function (json) {
     $.each(json.sounds, function (index, sound) {
-        console.log(sound);
-        var sound_marker = L.marker([sound.latitude, sound.longitude], {icon: pausedIcon}).addTo(map);
-        console.log(sound_marker);
-
+        var sound_marker = L.marker([sound.latitude, sound.longitude], {icon: playIcon}).addTo(map);
         sound_marker.on('click', function (event) {
             if (sound_marker.sound) {
                 sound_marker.sound.togglePause();
 
                 if (sound_marker.sound.paused) {
-                    sound_marker.setIcon(pausedIcon);
+                    sound_marker.setIcon(playIcon);
                 } else {
-                    sound_marker.setIcon(playingIcon);
+                    sound_marker.setIcon(pausedIcon);
                 }
             } else {
                 SC.stream("/tracks/" + sound.soundcloud_id, function(sound){
                     sound_marker.sound = sound;
                     loopSound(sound_marker.sound);
-                    sound_marker.setIcon(playingIcon);
+                    sound_marker.setIcon(pausedIcon);
                 })
             }
         });
