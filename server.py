@@ -51,12 +51,15 @@ def get_sounds(client):
     """
     Get all geolocated Sounds in the authenticated user's stream.
     """
+    logging.info(
+        'Fetching sound data from {user}\'s SoundCloud stream.'.format(client.get('/me').obj.get('username'))
+        )
     sounds = []
     tracks = client.get('/me/tracks')
 
     for track in tracks:
         try:
-            logging.info(u'Building sound object: "{0}"'.format(track.obj.get('title')))
+            logging.debug(u'Building sound object: "{0}"'.format(track.obj.get('title')))
             tags = track.obj.get('tag_list').split()
             lats = {float(tag.split('=')[1]) for tag in tags if u'geo:lat=' in tag}
             lons = {float(tag.split('=')[1]) for tag in tags if u'geo:lon=' in tag}
@@ -71,7 +74,7 @@ def get_sounds(client):
                               description=track.obj.get('description'),
                               datetime=dttm)
                 sounds.append(sound)
-                logging.info('Sound successfully processed: "{0}"'.format(sound))
+                logging.debug('Sound successfully processed: "{0}"'.format(sound))
 
         except Exception as e:
             logging.warning(
