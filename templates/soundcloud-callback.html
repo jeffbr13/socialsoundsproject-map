@@ -3,9 +3,11 @@
 {% block title %}Soundcloud account authenticated - Social Sounds Project{% endblock %}
 
 {% block content %}
-<h1>Soundcloud account authenticated successfully!</h1>
+<div class="row">
+    <h1 class="bg-success">Soundcloud account authenticated successfully!</h1>
 
-<p>Welcome, {{user.full_name}} (<a href="{{user.uri}}">{{user.username}}</a>)!</p>
+    <p>Welcome, <a href="{{user.uri}}">{{user.username}}</a>!</p>
 
-<p>The <a href="/">Social Sounds Project application</a> will now use your SoundCloud account to store uploaded sounds. <a href="http://soundcheck.soundcloud.com/audio/map-your-audio/">Geotagged</a> sounds will be shown on the main map.</p>
+    <p>The <a href="/">Social Sounds Project application</a> will now use your SoundCloud account to store uploaded sounds. <a href="http://soundcheck.soundcloud.com/audio/map-your-audio/">Geotagged</a> sounds will be shown on the main map.</p>
+</div>
 {% endblock %}

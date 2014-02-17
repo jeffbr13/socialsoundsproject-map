@@ -1,12 +1,25 @@
-body { padding-top: 80px; }
+body {
+    font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+}
 
 .navbar-brand {
     color: #333 !important;
-    font-size: 48px;
+    font-weight: bold;
+}
+
+.navbar-brand>img {
+    margin-right: 0.6em;
 }
 
 .navbar-btn {
     margin-top: 15px;
 }
 
-#map { height: 450px;}
+nav>ul>li>a {
+    text-align: center;
+}
+
+#map {
+    height: 100%;
+    min-height: 600px;
+}

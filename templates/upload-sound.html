@@ -5,20 +5,29 @@
 
 
 {% block content %}
-<div id="map">
+<div class="row">
+    <div class="col-md-6">
+        <div id="map"></div>
+    </div>
+
+    {% from "_formhelpers.html" import render_field %}
+    <div class="col-md-6">
+        <form class="form-horizontal" role="form" method="POST" action="" enctype="multipart/form-data">
+            <legend class="">Upload a sound:</legend>
+            <p class="text-muted" style="text-align: center; margin-bottom: 1.5em;">Use the map to mark where the sound was recorded.</p>
+            {{ render_field(form.sound) }}
+            {{ render_field(form.latitude, "hidden", class="form-control") }}
+            {{ render_field(form.longitude, "hidden", class="form-control") }}
+            {{ render_field(form.human_readable_location, class="form-control") }}
+            {{ render_field(form.description, class="form-control") }}
+            <div class="col-sm-9 col-sm-offset-3">
+                <input type="submit" value="Upload sound" class="btn btn-lg btn-primary">
+            </div>
+        </form>
+    </div>
+
 </div>
 
-{% from "_formhelpers.html" import render_field %}
-<form class="form-horizontal" role="form" method="POST" action="" enctype="multipart/form-data">
-    {{ render_field(form.sound) }}
-    {{ render_field(form.latitude, "hidden", class="form-control") }}
-    {{ render_field(form.longitude, "hidden", class="form-control") }}
-    {{ render_field(form.human_readable_location, class="form-control") }}
-    {{ render_field(form.description, class="form-control") }}
-    <div class="col-sm-10 col-sm-offset-2">
-        <input type="submit" value="Upload sound" class="btn btn-lg btn-primary">
-    </div>
-</form>
 {% endblock %}
 
 
