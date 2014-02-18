@@ -40,8 +40,20 @@ var pauseIcon = L.icon({
 
 $.getJSON('/sounds.json', function (json) {
     $.each(json.sounds, function (index, sound) {
+
         var sound_marker = L.marker([sound.latitude, sound.longitude], {icon: playIcon}).addTo(map);
+
+        var popup_str = '<b>'
+        if (sound.description) {
+            popup_str = popup_str + sound.description + ' (' + sound.human_readable_location + ')</b>';
+        } else {
+            popup_str = popup_str + sound.human_readable_location + '</b>';
+        }
+        popup_str = popup_str + '<br/><small>' + sound.datetime + '</small>';
+        sound_marker.bindPopup(popup_str);
+
         sound_marker.on('click', function (event) {
+
             if (sound_marker.sound) {
                 sound_marker.sound.togglePause();
 
@@ -50,6 +62,7 @@ $.getJSON('/sounds.json', function (json) {
                 } else {
                     sound_marker.setIcon(pauseIcon);
                 }
+
             } else {
                 SC.stream("/tracks/" + sound.soundcloud_id, function(sound){
                     sound_marker.sound = sound;
