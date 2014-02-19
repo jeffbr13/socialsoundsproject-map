@@ -64,9 +64,10 @@ def get_sounds(client):
         try:
             logging.debug(u'Building sound object: "{0}"'.format(track.obj.get('title')))
             tags = track.obj.get('tag_list').split()
-            lats = {float(tag.split('=')[1]) for tag in tags if u'geo:lat=' in tag}
-            lons = {float(tag.split('=')[1]) for tag in tags if u'geo:lon=' in tag}
-            human_readable_location, date_time_etc = track.obj.get('title').split(', ', 1)
+            lats = {float(tag.split(u'=')[1]) for tag in tags if u'geo:lat=' in tag}
+            lons = {float(tag.split(u'=')[1]) for tag in tags if u'geo:lon=' in tag}
+            human_readable_location = track.obj.get('title')[:-20]
+            date_time_etc = track.obj.get('title')[-18:]
             dttm = datetime.strptime(date_time_etc[:18], '%b %d %Y, %H:%M')
 
             if lats and lons:
