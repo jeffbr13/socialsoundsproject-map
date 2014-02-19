@@ -20,9 +20,14 @@
             {{ render_field(form.longitude, "hidden", class="form-control") }}
             {{ render_field(form.human_readable_location, class="form-control") }}
             {{ render_field(form.description, class="form-control") }}
-            <div class="col-sm-9 col-sm-offset-3">
+            <div class="col-sm-4">
                 <input type="submit" value="Upload sound" class="btn btn-lg btn-primary">
             </div>
+            <div class="col-sm-8">
+
+                <small class="text-muted">By uploading sounds here, you agree to let us make them available under a <a href="http://creativecommons.org/licenses/by/4.0/">Creative Commons CC-BY license</a>, so that anyone can reuse them.</small>
+            </div>
+
         </form>
     </div>
 
