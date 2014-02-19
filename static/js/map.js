@@ -37,11 +37,9 @@ $.getJSON('/sounds.json', function (json) {
 
         var sound_marker = L.marker([sound.latitude, sound.longitude], {icon: playIcon}).addTo(map);
 
-        var popup_str = '<b>'
+        var popup_str = '<b>' + sound.human_readable_location + '</b>'
         if (sound.description) {
-            popup_str = popup_str + sound.description + ' (' + sound.human_readable_location + ')</b>';
-        } else {
-            popup_str = popup_str + sound.human_readable_location + '</b>';
+            popup_str = popup_str + '<br/>' + sound.description;
         }
         popup_str = popup_str + '<br/><small>' + sound.datetime + '</small>';
         sound_marker.bindPopup(popup_str);
