@@ -9,7 +9,7 @@ var map = L.map('map')
 var soundIcon = L.icon({
     iconUrl: '/static/img/marker.png',
     iconRetinaUrl: '/static/img/marker@2X.png',
-    iconSize: [12,12]
+    iconSize: [28,28]
 });
 
 position_marker = L.marker([55.946, -3.186], {

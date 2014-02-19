@@ -19,12 +19,6 @@ var map = L.map('map')
     }));
 
 
-var soundIcon = L.icon({
-    iconUrl: '/static/img/marker.png',
-    iconRetinaUrl: '/static/img/marker@2X.png',
-    iconSize: [12,12]
-});
-
 var playIcon = L.icon({
     iconUrl: '/static/img/play.png',
     iconRetinaUrl: '/static/img/play@2X.png',
