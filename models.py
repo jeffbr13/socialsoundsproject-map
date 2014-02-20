@@ -8,8 +8,7 @@ Sound = namedtuple('Sound', ['soundcloud_id',
                              'latitude',
                              'longitude',
                              'human_readable_location',
-                             'description',
-                             'datetime'])
+                             'description'])
 
 
 class UploadSoundForm(Form):

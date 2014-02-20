@@ -66,17 +66,14 @@ def get_sounds(client):
             tags = track.obj.get('tag_list').split()
             lats = {float(tag.split(u'=')[1]) for tag in tags if u'geo:lat=' in tag}
             lons = {float(tag.split(u'=')[1]) for tag in tags if u'geo:lon=' in tag}
-            human_readable_location = track.obj.get('title')[:-20]
-            date_time_etc = track.obj.get('title')[-18:]
-            dttm = datetime.strptime(date_time_etc[:18], '%b %d %Y, %H:%M')
+            human_readable_location = track.obj.get('title')
 
             if lats and lons:
                 sound = Sound(soundcloud_id=track.obj.get('id'),
                               latitude=lats.pop(),
                               longitude=lons.pop(),
                               human_readable_location=human_readable_location,
-                              description=track.obj.get('description'),
-                              datetime=dttm)
+                              description=track.obj.get('description'))
                 sounds.append(sound)
                 logging.debug('Sound successfully processed: "{0}"'.format(sound))
 
@@ -142,8 +139,7 @@ def upload_sound():
     if request.method == 'POST' and form.validate():
         logging.info('Upload form validated, posting to SoundCloud...')
         track = SOUNDCLOUD_CLIENT.post('/tracks', track={
-            'title': u'{location}, {upload_time:%b %d %Y, %H:%M}'.format(location=form.human_readable_location.data,
-                                                                         upload_time=datetime.now()),
+            'title': u'{location}'.format(location=form.human_readable_location.data),
             'description': form.description.data,
             'asset_data': request.files[form.sound.name],
             'tag_list': 'socialsoundsproject geo:lat={lat} geo:lon={lon}'.format(lat=form.latitude.data, lon=form.longitude.data),

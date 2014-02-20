@@ -41,7 +41,6 @@ $.getJSON('/sounds.json', function (json) {
         if (sound.description) {
             popup_str = popup_str + '<br/>' + sound.description;
         }
-        popup_str = popup_str + '<br/><small>' + sound.datetime + '</small>';
         sound_marker.bindPopup(popup_str);
 
         sound_marker.on('click', function (event) {
