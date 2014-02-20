@@ -13,7 +13,7 @@ import soundcloud
 from models import Sound, UploadSoundForm
 
 
-SERVER_URL = 'http://socialsoundsproject.com'
+SERVER_URL = 'http://www.socialsoundsproject.com'
 SOUNDCLOUD_CALLBACK_PATH = '/soundcloud/callback'
 
 logging.basicConfig(level=logging.DEBUG)
