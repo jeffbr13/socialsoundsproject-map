@@ -13,7 +13,7 @@ function loopSound(sound) {
 
 // Map creation + initialisation
 var map = L.map('map')
-    .setView([55.947, -3.2], 14)
+    .setView([55.947, -3.2], 12)
     .addLayer(L.mapbox.tileLayer('socialsoundsproject.h9hbe4l4', {
         detectRetina: true
     }));
