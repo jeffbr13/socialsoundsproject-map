@@ -18,6 +18,6 @@ class UploadSoundForm(Form):
     """
     latitude = DecimalField(u'Latitude')
     longitude = DecimalField(u'Longitude')
-    human_readable_location = StringField(u'Location (human-readable)', validators=[validators.Length(max=140)])
-    description = StringField(u'Description', validators=[validators.Length(max=140)])
+    human_readable_location = StringField(u'Where did you record this sound?', validators=[validators.Length(max=140)])
+    description = StringField(u'What is the sound? When did you record it?', validators=[validators.Length(max=140)])
     sound = FileField(u'Sound File')
