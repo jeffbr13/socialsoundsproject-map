@@ -57,6 +57,7 @@ def get_sounds(client):
     sounds = []
     try:
         tracks = client.get('/me/tracks')
+        logging.info('Got list of {0} sounds from SoundCloud.'.format(len(tracks)))
     except Exception as e:
         logging.error('Couldn\'t get SoundCloud sounds, try authenticating: {0}'.format(e))
 
@@ -82,6 +83,7 @@ def get_sounds(client):
                 'Exception in processing sound "{title}": {exception}'.format(title=track.obj.get('title'),
                                                                               exception=e)
                 )
+    logging.info('Built {0} geolocated sound objects from SoundCloud.'.format(len(sounds)))
     return sounds
 
 
