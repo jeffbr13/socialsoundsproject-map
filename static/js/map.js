@@ -1,4 +1,15 @@
-// Soundcloud
+// Map height:
+
+function map_height () {
+    var map_height = $( window ).height() - 100;
+    $('#map').height(map_height);
+}
+
+map_height();
+$( window ).resize(map_height);
+
+
+// Soundcloud:
 SC.initialize({
   client_id: '0183346830552e3721f88daf4c6a8f8d'
 });
@@ -9,10 +20,11 @@ function loopSound(sound) {
       loopSound(sound);
     }
   });
-}
+};
 
-// Map creation + initialisation
-var map = L.map('map')
+
+// Map creation + initialisation:
+var map = L.map( 'map' )
     .setView([55.947, -3.2], 11)
     .addLayer(L.mapbox.tileLayer('socialsoundsproject.h9hbe4l4', {
         detectRetina: true
@@ -32,6 +44,7 @@ var pauseIcon = L.icon({
 });
 
 
+// Get sounds from backend and display them:
 $.getJSON('/sounds.json', function (json) {
     $.each(json.sounds, function (index, sound) {
 
