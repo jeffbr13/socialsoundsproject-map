@@ -60,6 +60,7 @@ def get_sounds(client):
         logging.info('Got list of {0} sounds from SoundCloud.'.format(len(tracks)))
     except Exception as e:
         logging.error('Couldn\'t get SoundCloud sounds, try authenticating: {0}'.format(e))
+        return
 
     for track in tracks:
         try:
@@ -163,6 +164,15 @@ def all_sounds():
     """
     check_sounds_refresh()
     return jsonify(sounds=SOUNDCLOUD_SOUNDS)
+
+
+@app.route('/locations.json')
+def locations():
+    """
+    Return JSON for available projects.
+    """
+    return app.send_static_file('locations.json')
+    return jsonify(projects=PROJECTS)
 
 
 @app.route('/refresh')
