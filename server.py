@@ -192,7 +192,6 @@ def locations():
     Return JSON for available projects.
     """
     return app.send_static_file('locations.json')
-    return jsonify(projects=PROJECTS)
 
 
 @app.route('/refresh')

@@ -1,4 +1,4 @@
-PROJECTS = [
+locations = [
     {
         "name": "edinburgh",
         "human_readable_name": "Edinburgh",
