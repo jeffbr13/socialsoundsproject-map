@@ -47,45 +47,65 @@ def init_soundcloud(token_store):
                                  redirect_uri=(SERVER_URL + SOUNDCLOUD_CALLBACK_PATH))
 
 
-def get_sounds(client):
+def get_sounds(soundcloud_client):
     """
     Get all geolocated Sounds in the authenticated user's stream.
     """
     logging.info(
-        'Fetching sound data from {user}\'s SoundCloud stream.'.format(user=client.get('/me').obj.get('username'))
+        'Fetching sound data from {user}\'s SoundCloud stream.'.format(user=soundcloud_client.get('/me').obj.get('username'))
         )
     sounds = []
     try:
-        tracks = client.get('/me/tracks')
+        page_size = 50
+        offset = 0
+        tracks = []
+        page = soundcloud_client.get('/me/tracks', limit=page_size)
+        while len(page) > 0:
+            tracks.extend(page)
+            offset += page_size
+            page = soundcloud_client.get('/me/tracks', limit=page_size, offset=offset)
+
         logging.info('Got list of {0} sounds from SoundCloud.'.format(len(tracks)))
     except Exception as e:
         logging.error('Couldn\'t get SoundCloud sounds, try authenticating: {0}'.format(e))
         return
 
     for track in tracks:
-        try:
-            logging.debug(u'Building sound object: "{0}"'.format(track.obj.get('title')))
-            tags = track.obj.get('tag_list').split()
-            lats = {float(tag.split(u'=')[1]) for tag in tags if u'geo:lat=' in tag}
-            lons = {float(tag.split(u'=')[1]) for tag in tags if u'geo:lon=' in tag}
-            human_readable_location = track.obj.get('title')
+        sound = build_sound(track)
+        if sound:
+            sounds.append(sound)
 
-            if lats and lons:
-                sound = Sound(soundcloud_id=track.obj.get('id'),
-                              latitude=lats.pop(),
-                              longitude=lons.pop(),
-                              human_readable_location=human_readable_location,
-                              description=track.obj.get('description'))
-                sounds.append(sound)
-                logging.debug('Sound successfully processed: "{0}"'.format(sound))
-
-        except Exception as e:
-            logging.warning(
-                'Exception in processing sound "{title}": {exception}'.format(title=track.obj.get('title'),
-                                                                              exception=e)
-                )
     logging.info('Built {0} geolocated sound objects from SoundCloud.'.format(len(sounds)))
     return sounds
+
+
+def build_sound(soundcloud_track):
+    """
+    Build a Sound from the track object returned by the SoundCloud API,
+    or return None.
+    """
+    try:
+        logging.debug(u'Building sound object: "{0}"'.format(soundcloud_track.obj.get('title')))
+        tags = soundcloud_track.obj.get('tag_list').split()
+        lats = {float(tag.split(u'=')[1]) for tag in tags if u'geo:lat=' in tag}
+        lons = {float(tag.split(u'=')[1]) for tag in tags if u'geo:lon=' in tag}
+        human_readable_location = soundcloud_track.obj.get('title')
+
+        if lats and lons:
+            sound = Sound(soundcloud_id=soundcloud_track.obj.get('id'),
+                          latitude=lats.pop(),
+                          longitude=lons.pop(),
+                          human_readable_location=human_readable_location,
+                          description=soundcloud_track.obj.get('description'))
+            logging.debug('Sound successfully processed: "{0}"'.format(sound))
+            return sound
+
+    except Exception as e:
+        logging.warning(
+            'Exception in processing sound "{title}": {exception}'.format(title=soundcloud_track.obj.get('title'),
+                                                                          exception=e)
+            )
+        return None
 
 
 def check_sounds_refresh():
