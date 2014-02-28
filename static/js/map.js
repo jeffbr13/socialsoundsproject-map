@@ -53,7 +53,7 @@ $.getJSON('/sounds.json', function (json) {
         var popup_str = '<b>' + sound.human_readable_location + '</b>'
         if (sound.description) {
             popup_str = popup_str + '<br/>' + sound.description;
-        }
+        };
         sound_marker.bindPopup(popup_str);
 
         sound_marker.on('click', function (event) {
@@ -72,10 +72,10 @@ $.getJSON('/sounds.json', function (json) {
                 SC.stream("/tracks/" + sound.soundcloud_id, function(sound){
                     sound_marker.sound = sound;
                     loopSound(sound_marker.sound);
-                    // sound playing (hopefully)
+                    // sound playing
                     sound_marker.setIcon(pauseIcon);
-                })
-            }
+                });
+            };
         });
 
         sound_marker.on('mouseover', function (event) {
@@ -85,5 +85,5 @@ $.getJSON('/sounds.json', function (json) {
         sound_marker.on('mouseout', function (event) {
             sound_marker.closePopup();
         });
-    })
+    });
 });
