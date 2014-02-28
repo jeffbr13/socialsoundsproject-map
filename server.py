@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 """Back-end server for socialsoundsproject.com"""
 from datetime import datetime
+import json
 import logging
 from os import environ
 from urlparse import urlparse
@@ -10,7 +11,7 @@ from flask import Flask, render_template, request, jsonify, redirect
 import redis
 import soundcloud
 
-from models import Sound, UploadSoundForm
+from models import LOCATIONS, Sound, UploadSoundForm
 
 
 SERVER_URL = 'http://www.socialsoundsproject.com'
@@ -124,7 +125,7 @@ def index():
     """
     Serve the index page.
     """
-    return render_template('index.html')
+    return render_template('index.html', locations=LOCATIONS)
 
 
 @app.route('/soundcloud/authenticate')
@@ -191,7 +192,7 @@ def locations():
     """
     Return JSON for available projects.
     """
-    return app.send_static_file('locations.json')
+    return jsonify(locations=LOCATIONS)
 
 
 @app.route('/refresh')
