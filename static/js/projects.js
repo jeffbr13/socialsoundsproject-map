@@ -1,14 +1,10 @@
-
 function move_map_to_location () {
     var project = projects[location.hash.slice(1)];
     var centre = L.latLng(project.centre[0], project.centre[1]);
-    console.log(project);
     map.panTo(centre, 11);
 }
 
-window.onhashchange = move_map_to_location;
-
-// Get projects and update map location:
+// Get projects and update map location once loaded:
 var projects = {}
 $.getJSON('/locations.json', function (json) {
     $.each(json.locations, function (index, project) {
@@ -18,3 +14,6 @@ $.getJSON('/locations.json', function (json) {
     });
     move_map_to_location();
 });
+
+// Update map location when location-hash changes:
+window.onhashchange = move_map_to_location;
