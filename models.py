@@ -18,13 +18,13 @@ LOCATIONS = [
         "scale": 11
     },
     {
-        "name": "peak_district",
+        "name": "peak-district",
         "human_readable_name": "Peak District",
         "centre": [53.283, -1.761],
         "scale": 11
     },
     {
-        "name": "west_coast",
+        "name": "off-the-grid",
         "human_readable_name": "Off The Grid",
         "centre": [56.547, -5.690],
         "scale": 11
