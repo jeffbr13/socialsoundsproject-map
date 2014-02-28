@@ -1,5 +1,5 @@
-Social Sounds Project Map
-=========================
+socialsoundsproject-map
+=======================
 
 The [Social Sounds Project map][] shows sounds uploaded to Social Sounds Projects across the UK,
 and allows anyone to upload a sound and mark it on the map.
@@ -11,6 +11,8 @@ across sessions.
 
 Sound data and metadata is stored on
 the [Social Sounds Project SoundCloud page](https://soundcloud.com/socialsoundsproject/).
+
+
 
 
 ## Usage
@@ -52,4 +54,4 @@ python server.py
 
 
 
-[Social Sounds Project]: http://socialsoundsproject.com
+[Social Sounds Project map]: http://socialsoundsproject.com
