@@ -15,6 +15,7 @@ from models import LOCATIONS, Sound, UploadSoundForm
 
 
 SERVER_URL = 'http://www.socialsoundsproject.com'
+SOUNDCLOUD_AUTH_PATH = '/' + environ.get('SOUNDCLOUD_AUTH_PATH', 'soundcloud/authenticate')
 SOUNDCLOUD_CALLBACK_PATH = '/soundcloud/callback'
 
 logging.basicConfig(level=logging.DEBUG)
@@ -128,7 +129,7 @@ def index():
     return render_template('index.html', locations=LOCATIONS)
 
 
-@app.route('/soundcloud/authenticate')
+@app.route(SOUNDCLOUD_AUTH_PATH)
 def soundcloud_authenticate():
     """
     Authenticate as a SoundCloud user.

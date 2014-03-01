@@ -13,8 +13,6 @@ Sound data and metadata is stored on
 the [Social Sounds Project SoundCloud page](https://soundcloud.com/socialsoundsproject/).
 
 
-
-
 ## Usage
 
 ### Requirements
@@ -29,9 +27,10 @@ the [Social Sounds Project SoundCloud page](https://soundcloud.com/socialsoundsp
 The following environment variables need to be set for the server to run correctly:
 
 ```sh
-export SOUNDCLOUD_CLIENT_SECRET='...'
-export SOUNDCLOUD_CLIENT_ID='...'
-export REDISCLOUD_URL='redis://...'
+export SOUNDCLOUD_AUTH_PATH='...'           # secret address on server to authenticate your SoundCloud account
+export SOUNDCLOUD_CLIENT_SECRET='...'       # SoundCloud API Secret
+export SOUNDCLOUD_CLIENT_ID='...'           # SoundCloud API ID
+export REDISCLOUD_URL='redis://...'         # Redis Cloud server address
 ```
 
 If developing locally, it's recommended that you put these variables into a `.env` file and
@@ -51,6 +50,9 @@ mkvirtualenv -a . -r requirements.txt socialsoundsproject-map
 ```sh
 python server.py
 ```
+
+To authenticate your server with your SoundCloud account, visit `http://{server-address}/{SOUNDCLOUD_AUTH_PATH}`,
+with `SOUNDCLOUD_AUTH_PATH` being a string stored in an [environment variable](#environment-variables).
 
 
 
