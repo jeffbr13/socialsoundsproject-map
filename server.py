@@ -7,7 +7,7 @@ import logging
 from os import environ
 from urlparse import urlparse
 
-from flask import Flask, render_template, request, jsonify, redirect
+from flask import Flask, render_template, request, jsonify, redirect, flash
 import redis
 import soundcloud
 
@@ -21,6 +21,7 @@ SOUNDCLOUD_CALLBACK_PATH = '/soundcloud/callback'
 logging.basicConfig(level=logging.DEBUG)
 
 app = Flask(__name__)
+app.secret_key = environ['SECRET_KEY']
 REDIS_CACHE = None
 SOUNDCLOUD_CLIENT = None
 SOUNDCLOUD_SOUNDS = None
@@ -53,9 +54,7 @@ def get_sounds(soundcloud_client):
     """
     Get all geolocated Sounds in the authenticated user's stream.
     """
-    logging.info(
-        'Fetching sound data from {user}\'s SoundCloud stream.'.format(user=soundcloud_client.get('/me').obj.get('username'))
-        )
+    logging.info('Fetching sound data from authenticated user\'s SoundCloud stream.')
     sounds = []
     try:
         page_size = 50
@@ -126,6 +125,11 @@ def index():
     """
     Serve the index page.
     """
+    if not SOUNDCLOUD_SOUNDS:
+        flash(
+            'No sounds found. Try authenticating to SoundCloud at secret URL http://{server-address}/${SOUNDCLOUD_AUTH_PATH}.',
+            'danger')
+
     return render_template('index.html', locations=LOCATIONS)
 
 
@@ -210,7 +214,10 @@ if __name__ == '__main__':
     logging.info('Starting server...')
     REDIS_CACHE = init_cache(environ.get('REDISCLOUD_URL'))
     SOUNDCLOUD_CLIENT = init_soundcloud(REDIS_CACHE)
-    SOUNDCLOUD_SOUNDS = get_sounds(SOUNDCLOUD_CLIENT)
+    try:
+        SOUNDCLOUD_SOUNDS = get_sounds(SOUNDCLOUD_CLIENT)
+    except Exception as e:
+        SOUNDCLOUD_SOUNDS = []
     # Bind to PORT if defined, otherwise default to 5000.
     port = int(environ.get('PORT', 5000))
     logging.debug('Launching Flask app...')

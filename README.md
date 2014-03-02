@@ -27,6 +27,7 @@ the [Social Sounds Project SoundCloud page](https://soundcloud.com/socialsoundsp
 The following environment variables need to be set for the server to run correctly:
 
 ```sh
+export SECRET_KEY='...'                     # random secret string - feel free to mash the keyboard for this
 export SOUNDCLOUD_AUTH_PATH='...'           # secret address on server to authenticate your SoundCloud account
 export SOUNDCLOUD_CLIENT_SECRET='...'       # SoundCloud API Secret
 export SOUNDCLOUD_CLIENT_ID='...'           # SoundCloud API ID
