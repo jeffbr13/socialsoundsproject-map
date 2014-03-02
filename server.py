@@ -206,6 +206,7 @@ def refresh_sounds():
     Manually refresh sounds.
     """
     REDIS_CACHE.delete('soundcloud:new')
+    SOUNDCLOUD_CLIENT = init_soundcloud(REDIS_CACHE)
     SOUNDCLOUD_SOUNDS = get_sounds(SOUNDCLOUD_CLIENT)
     return redirect('/')
 
