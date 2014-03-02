@@ -57,4 +57,12 @@ with `SOUNDCLOUD_AUTH_PATH` being a string stored in an [environment variable](#
 
 
 
+## [License](https://www.mozilla.org/MPL/2.0/)
+
+Source code in this repository is subject to the terms of the Mozilla Public
+License, v. 2.0. If a copy of the MPL was not distributed with this
+file, You can obtain one at <http://mozilla.org/MPL/2.0/>.
+
+
+
 [Social Sounds Project map]: http://socialsoundsproject.com
