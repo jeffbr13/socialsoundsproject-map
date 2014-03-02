@@ -2,7 +2,7 @@
 // ----------
 
 function map_container_height () {
-    var map_container_height = $( window ).height() - 140;
+    var map_container_height = $( window ).height() - 200;
     $('#map').height(map_container_height);
 }
 
