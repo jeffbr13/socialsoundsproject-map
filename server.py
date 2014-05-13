@@ -231,7 +231,9 @@ if __name__ == '__main__':
         SOUNDCLOUD_SOUNDS = get_sounds(SOUNDCLOUD_CLIENT)
     except Exception as e:
         SOUNDCLOUD_SOUNDS = []
-        send_email_to_admin('No sounds found', 'No sounds found in SoundCloud account. Have you authorised your SoundCloud account at <{0}> yet?'.format(SERVER_URL + SOUNDCLOUD_AUTH_PATH))
+        send_email_to_admin(
+            'No sounds found',
+            'No sounds found in SoundCloud account. Have you authorised your SoundCloud account at <{0}> yet?\n\nProtip: refresh the sounds loaded from SoundCloud by visiting <{1}>.'.format(SERVER_URL + SOUNDCLOUD_AUTH_PATH), SERVER_URL + '/refresh')
     # Bind to PORT if defined, otherwise default to 5000.
     port = int(env.get('PORT', 5000))
     logging.debug('Launching Flask app...')
