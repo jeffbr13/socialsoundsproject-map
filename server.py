@@ -4,24 +4,26 @@
 from datetime import datetime
 import json
 import logging
-from os import environ
+import smtplib
+from email.mime.text import MIMEText
+from os import environ as env
 from urlparse import urlparse
 
-from flask import Flask, render_template, request, jsonify, redirect, flash
 import redis
 import soundcloud
+from flask import Flask, render_template, request, jsonify, redirect, flash
 
 from models import LOCATIONS, Sound, UploadSoundForm
 
 
 SERVER_URL = 'http://www.socialsoundsproject.com'
-SOUNDCLOUD_AUTH_PATH = '/' + environ.get('SOUNDCLOUD_AUTH_PATH', 'soundcloud/authenticate')
+SOUNDCLOUD_AUTH_PATH = '/' + env.get('SOUNDCLOUD_AUTH_PATH', 'soundcloud/authenticate')
 SOUNDCLOUD_CALLBACK_PATH = '/soundcloud/callback'
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.DEBUG if env.get('DEBUG') else logging.INFO)
 
 app = Flask(__name__)
-app.secret_key = environ['SECRET_KEY']
+app.secret_key = env['SECRET_KEY']
 REDIS_CACHE = None
 SOUNDCLOUD_CLIENT = None
 SOUNDCLOUD_SOUNDS = None
@@ -40,13 +42,13 @@ def init_soundcloud(token_store):
     logging.debug('Initialising SoundCloud client...')
     access_token = token_store.get('soundcloud:access_token')
     if access_token:
-        return soundcloud.Client(client_id=environ.get('SOUNDCLOUD_CLIENT_ID'),
-                                 client_secret=environ.get('SOUNDCLOUD_CLIENT_SECRET'),
+        return soundcloud.Client(client_id=env.get('SOUNDCLOUD_CLIENT_ID'),
+                                 client_secret=env.get('SOUNDCLOUD_CLIENT_SECRET'),
                                  redirect_uri=(SERVER_URL + SOUNDCLOUD_CALLBACK_PATH),
                                  access_token=access_token)
     else:
-        return soundcloud.Client(client_id=environ.get('SOUNDCLOUD_CLIENT_ID'),
-                                 client_secret=environ.get('SOUNDCLOUD_CLIENT_SECRET'),
+        return soundcloud.Client(client_id=env.get('SOUNDCLOUD_CLIENT_ID'),
+                                 client_secret=env.get('SOUNDCLOUD_CLIENT_SECRET'),
                                  redirect_uri=(SERVER_URL + SOUNDCLOUD_CALLBACK_PATH))
 
 
@@ -107,6 +109,16 @@ def build_sound(soundcloud_track):
                                                                           exception=e)
             )
         return None
+
+def send_email_to_admin(subject, email_text):
+    msg = MIMEText(email_text)
+    msg['Subject'] = subject
+    msg['From'] = 'robot@socialsoundsproject.com'
+    msg['To'] = env.get('ADMIN_EMAIL')
+
+    s = smtplib.SMTP(host=env.get('SMTP_HOST', 'localhost'), port=int(env.get('SMTP_PORT', 25)))
+    s.login(user=env.get('SMTP_USER'), password=env.get('SMTP_PASSWORD'))
+    s.sendmail(msg['From'], [msg['To']], msg.as_string())
 
 
 def check_sounds_refresh():
@@ -213,14 +225,14 @@ def refresh_sounds():
 
 if __name__ == '__main__':
     logging.info('Starting server...')
-    REDIS_CACHE = init_cache(environ.get('REDISCLOUD_URL'))
+    REDIS_CACHE = init_cache(env.get('REDISCLOUD_URL'))
     SOUNDCLOUD_CLIENT = init_soundcloud(REDIS_CACHE)
     try:
         SOUNDCLOUD_SOUNDS = get_sounds(SOUNDCLOUD_CLIENT)
     except Exception as e:
         SOUNDCLOUD_SOUNDS = []
+        send_email_to_admin('No sounds found', 'No sounds found in SoundCloud account. Have you authorised your SoundCloud account at <{0}> yet?'.format(SERVER_URL + SOUNDCLOUD_AUTH_PATH))
     # Bind to PORT if defined, otherwise default to 5000.
-    port = int(environ.get('PORT', 5000))
+    port = int(env.get('PORT', 5000))
     logging.debug('Launching Flask app...')
-    app.run(host='0.0.0.0', port=port, debug=True)
-
+    app.run(host='0.0.0.0', port=port, debug=bool(env.get('DEBUG', False)))
