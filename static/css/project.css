@@ -1,8 +1,13 @@
-html, body, div.container-fluid {
+html, body, .container-fluid {
     height: 100% !important;
 }
+
 #map {
-    height: 90% !important;
+    height: 100% !important;
+}
+
+.content {
+    margin-top: 65px;
 }
 
 body {
@@ -28,7 +33,6 @@ nav>ul>li>a {
 
 #map {
     min-height: 600px;
-    margin-bottom: 20px;
 }
 
 footer {
