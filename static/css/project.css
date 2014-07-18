@@ -1,38 +1,34 @@
+/* Map/content vertical-spacing */
 html, body, .container-fluid {
     height: 100% !important;
 }
-
 #map {
     height: 100% !important;
+    margin-top: -1em;
+    margin-bottom: 1em;
 }
-
 .content {
     margin-top: 65px;
 }
 
-body {
-    font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+/* Typeface */
+* {
+    font-family: "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif !important;
+    font-weight: 300;
 }
 
+/* Navbar logo & spacing */
 .navbar-brand {
     color: #333 !important;
     font-weight: bold;
 }
-
-.navbar-brand>img {
+.navbar-brand > img {
     margin-right: 0.6em;
 }
-
 .navbar-btn {
-    margin-top: 15px;
+    margin-top: 1em;
+    margin-right: 1em;
 }
-
-nav>ul>li>a {
-    text-align: center;
-}
-
-footer {
-    width: 100%;
-    height: 60px;
+nav > ul > li > a {
     text-align: center;
 }

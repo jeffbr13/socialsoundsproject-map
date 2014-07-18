@@ -1,15 +1,5 @@
 // Map setup:
 // ----------
-
-function map_container_height () {
-    var map_container_height = $( window ).height() - 200;
-    $('#map').height(map_container_height);
-}
-
-map_container_height();
-$( window ).resize(map_container_height);
-
-
 var map = L.map( 'map' )
     .setView([55.947, -3.2], 11)
     .addLayer(L.mapbox.tileLayer('socialsoundsproject.h9hbe4l4', {
