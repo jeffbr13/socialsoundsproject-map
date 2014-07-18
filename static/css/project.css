@@ -29,6 +29,3 @@ html, body, .container-fluid {
     margin-top: 1em;
     margin-right: 1em;
 }
-nav > ul > li > a {
-    text-align: center;
-}
