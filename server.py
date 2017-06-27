@@ -16,7 +16,7 @@ from flask import Flask, render_template, request, jsonify, redirect, flash
 from models import LOCATIONS, Sound, UploadSoundForm
 
 
-SERVER_URL = 'http://www.socialsoundsproject.com'
+SERVER_URL = env['SERVER_URL']
 SOUNDCLOUD_AUTH_PATH = '/' + env.get('SOUNDCLOUD_AUTH_PATH', 'soundcloud/authenticate')
 SOUNDCLOUD_CALLBACK_PATH = '/soundcloud/callback'
 
