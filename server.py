@@ -18,8 +18,6 @@ from models import LOCATIONS, Sound, UploadSoundForm
 
 
 SERVER_URL = env['SERVER_URL']
-SOUNDCLOUD_AUTH_PATH = '/' + env.get('SOUNDCLOUD_AUTH_PATH', 'soundcloud/authenticate')
-SOUNDCLOUD_CALLBACK_PATH = '/soundcloud/callback'
 REDIS_URL = env['REDISCLOUD_URL']
 SOUNDCLOUD_CLIENT = None
 SOUNDCLOUD_SOUNDS = None
@@ -36,16 +34,10 @@ def init_soundcloud(token_store):
     Returns SoundCloud client to use.
     """
     logging.debug('Initialising SoundCloud client...')
-    access_token = token_store.get('soundcloud:access_token')
-    if access_token:
-        return soundcloud.Client(client_id=env.get('SOUNDCLOUD_CLIENT_ID'),
-                                 client_secret=env.get('SOUNDCLOUD_CLIENT_SECRET'),
-                                 redirect_uri=(SERVER_URL + SOUNDCLOUD_CALLBACK_PATH),
-                                 access_token=access_token)
-    else:
-        return soundcloud.Client(client_id=env.get('SOUNDCLOUD_CLIENT_ID'),
-                                 client_secret=env.get('SOUNDCLOUD_CLIENT_SECRET'),
-                                 redirect_uri=(SERVER_URL + SOUNDCLOUD_CALLBACK_PATH))
+    return soundcloud.Client(client_id=env['SOUNDCLOUD_CLIENT_ID'],
+                             client_secret=env['SOUNDCLOUD_CLIENT_SECRET'],
+                             username=env['SOUNDCLOUD_ACCOUNT_USERNAME'],
+                             password=env['SOUNDCLOUD_ACCOUNT_PASSWORD'])
 
 
 def get_sounds(soundcloud_client):
@@ -139,31 +131,6 @@ def index():
             'danger')
 
     return render_template('index.html', locations=LOCATIONS)
-
-
-@app.route(SOUNDCLOUD_AUTH_PATH)
-def soundcloud_authenticate():
-    """
-    Authenticate as a SoundCloud user.
-
-    Accessing this URL drops any previous stored session information.
-    """
-    REDIS_CACHE.delete('soundcloud:access_token')
-    REDIS_CACHE.delete('soundcloud:scope')
-    SOUNDCLOUD_CLIENT = init_soundcloud(REDIS_CACHE)
-    return redirect(SOUNDCLOUD_CLIENT.authorize_url())
-
-
-@app.route(SOUNDCLOUD_CALLBACK_PATH)
-def soundcloud_callback():
-    """
-    Extract SoundCloud authorisation code.
-    """
-    code = request.args.get('code')
-    access_token = SOUNDCLOUD_CLIENT.exchange_token(code=request.args.get('code'))
-    REDIS_CACHE.set('soundcloud:access_token', access_token.access_token)
-    REDIS_CACHE.set('soundcloud:scope', access_token.scope)
-    return render_template('soundcloud-callback.html', user=SOUNDCLOUD_CLIENT.get('/me'))
 
 
 @app.route('/upload', methods=['GET', 'POST'])
