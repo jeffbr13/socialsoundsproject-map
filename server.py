@@ -20,6 +20,7 @@ logging.basicConfig(level=logging.DEBUG if env.get('DEBUG') else logging.INFO)
 
 app = Flask(__name__)
 app.secret_key = env['SECRET_KEY']
+app.config['REDIS_URL'] = REDIS_URL
 REDIS_CACHE = FlaskRedis(app)
 
 
