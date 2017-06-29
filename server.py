@@ -12,6 +12,7 @@ from urlparse import urlparse
 import redis
 import soundcloud
 from flask import Flask, render_template, request, jsonify, redirect, flash
+from flask_redis import FlaskRedis
 
 from models import LOCATIONS, Sound, UploadSoundForm
 
@@ -19,20 +20,15 @@ from models import LOCATIONS, Sound, UploadSoundForm
 SERVER_URL = env['SERVER_URL']
 SOUNDCLOUD_AUTH_PATH = '/' + env.get('SOUNDCLOUD_AUTH_PATH', 'soundcloud/authenticate')
 SOUNDCLOUD_CALLBACK_PATH = '/soundcloud/callback'
+REDIS_URL = env['REDISCLOUD_URL']
+SOUNDCLOUD_CLIENT = None
+SOUNDCLOUD_SOUNDS = None
 
 logging.basicConfig(level=logging.DEBUG if env.get('DEBUG') else logging.INFO)
 
 app = Flask(__name__)
 app.secret_key = env['SECRET_KEY']
-REDIS_CACHE = None
-SOUNDCLOUD_CLIENT = None
-SOUNDCLOUD_SOUNDS = None
-
-
-def init_cache(redis_url):
-    logging.debug('Connecting to Redis cache...')
-    url = urlparse(redis_url)
-    return redis.Redis(host=url.hostname, port=url.port, password=url.password)
+REDIS_CACHE = FlaskRedis(app)
 
 
 def init_soundcloud(token_store):
@@ -225,7 +221,6 @@ def refresh_sounds():
 
 if __name__ == '__main__':
     logging.info('Starting server...')
-    REDIS_CACHE = init_cache(env.get('REDISCLOUD_URL'))
     SOUNDCLOUD_CLIENT = init_soundcloud(REDIS_CACHE)
     try:
         SOUNDCLOUD_SOUNDS = get_sounds(SOUNDCLOUD_CLIENT)
