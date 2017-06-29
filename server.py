@@ -1,15 +1,9 @@
 #!python
 # -*- coding: utf-8 -*-
 """Back-end server for socialsoundsproject.com"""
-from datetime import datetime
-import json
 import logging
-import smtplib
-from email.mime.text import MIMEText
 from os import environ as env
-from urlparse import urlparse
 
-import redis
 import soundcloud
 from flask import Flask, render_template, request, jsonify, redirect, flash
 from flask_redis import FlaskRedis
@@ -98,16 +92,6 @@ def build_sound(soundcloud_track):
             )
         return None
 
-def send_email_to_admin(subject, email_text):
-    msg = MIMEText(email_text)
-    msg['Subject'] = subject
-    msg['From'] = 'robot@socialsoundsproject.com'
-    msg['To'] = env.get('ADMIN_EMAIL')
-
-    s = smtplib.SMTP(host=env.get('SMTP_HOST', 'localhost'), port=int(env.get('SMTP_PORT', 25)))
-    s.login(user=env.get('SMTP_USER'), password=env.get('SMTP_PASSWORD'))
-    s.sendmail(msg['From'], [msg['To']], msg.as_string())
-
 
 def check_sounds_refresh():
     """
@@ -192,10 +176,7 @@ if __name__ == '__main__':
     try:
         SOUNDCLOUD_SOUNDS = get_sounds(SOUNDCLOUD_CLIENT)
     except Exception as e:
-        SOUNDCLOUD_SOUNDS = []
-        send_email_to_admin(
-            'No sounds found',
-            'No sounds found in SoundCloud account. Have you authorised your SoundCloud account at <{0}> yet?\n\nProtip: refresh the sounds loaded from SoundCloud by visiting <{1}>.'.format(SERVER_URL + SOUNDCLOUD_AUTH_PATH), SERVER_URL + '/refresh')
+        logging.exception('Error getting Soundcloud sounds:')
     # Bind to PORT if defined, otherwise default to 5000.
     port = int(env.get('PORT', 5000))
     logging.debug('Launching Flask app...')
