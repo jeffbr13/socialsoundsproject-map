@@ -12,7 +12,7 @@ from models import LOCATIONS, Sound, UploadSoundForm
 
 
 SERVER_URL = env['SERVER_URL']
-REDIS_URL = env['REDISCLOUD_URL']
+REDIS_URL = env['REDIS_URL']
 SOUNDCLOUD_CLIENT = None
 SOUNDCLOUD_SOUNDS = None
 
